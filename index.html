@@ -165,11 +165,12 @@
     letter-spacing:-.01em;word-break:keep-all;
   }
   .tag{
-    display:inline-block;vertical-align:2px;margin-left:6px;
+    display:inline-block;margin-left:0;
     padding:2px 8px;border-radius:999px;
     background:#F1F1F4;color:#71717C;
     font-size:11px;font-weight:700;letter-spacing:0;white-space:nowrap;
   }
+  .card-foot{margin-top:8px}
   .desc{
     margin:5px 0 0;
     font-size:13px;line-height:1.55;color:var(--sub);
@@ -374,14 +375,7 @@
 
     var top = document.createElement("h2");
     top.className = "name";
-    top.appendChild(document.createTextNode(item.name || "상품 " + pad(item.no)));
-
-    if (item.tag) {
-      var tag = document.createElement("span");
-      tag.className = "tag";
-      tag.textContent = item.tag;
-      top.appendChild(tag);
-    }
+    top.textContent = item.name || "상품 " + pad(item.no);
     body.appendChild(top);
 
     if (item.desc) {
@@ -389,6 +383,16 @@
       desc.className = "desc";
       desc.textContent = item.desc;
       body.appendChild(desc);
+    }
+
+    if (item.tag) {
+      var foot = document.createElement("div");
+      foot.className = "card-foot";
+      var tag = document.createElement("span");
+      tag.className = "tag";
+      tag.textContent = item.tag;
+      foot.appendChild(tag);
+      body.appendChild(foot);
     }
 
     el.appendChild(no);

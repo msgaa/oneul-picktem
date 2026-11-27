@@ -159,14 +159,13 @@
     font-variant-numeric:tabular-nums;
   }
   .card-body{flex:1;min-width:0;padding-top:1px}
-  .card-top{display:flex;align-items:flex-start;gap:8px;flex-wrap:nowrap}
   .name{
-    flex:1;min-width:0;margin:0;
-    font-size:15.5px;font-weight:700;line-height:1.4;
+    margin:0;
+    font-size:15.5px;font-weight:700;line-height:1.45;
     letter-spacing:-.01em;word-break:keep-all;
   }
   .tag{
-    flex:none;margin-top:2px;
+    display:inline-block;vertical-align:2px;margin-left:6px;
     padding:2px 8px;border-radius:999px;
     background:#F1F1F4;color:#71717C;
     font-size:11px;font-weight:700;letter-spacing:0;white-space:nowrap;
@@ -373,13 +372,9 @@
     var body = document.createElement("div");
     body.className = "card-body";
 
-    var top = document.createElement("div");
-    top.className = "card-top";
-
-    var name = document.createElement("h2");
-    name.className = "name";
-    name.textContent = item.name || "상품 " + pad(item.no);
-    top.appendChild(name);
+    var top = document.createElement("h2");
+    top.className = "name";
+    top.appendChild(document.createTextNode(item.name || "상품 " + pad(item.no)));
 
     if (item.tag) {
       var tag = document.createElement("span");

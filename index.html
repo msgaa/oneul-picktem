@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>오늘의 픽템 | 번호로 찾는 상품 링크</title>
+<meta name="description" content="릴스에서 본 그 상품, 번호만 입력하면 바로 연결돼요. 오늘의 픽템(@oneul_picktem) 상품 모음.">
+<meta name="theme-color" content="#FF5A36">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="오늘의 픽템">
+<meta property="og:title" content="오늘의 픽템 | 번호로 찾는 상품 링크">
+<meta property="og:description" content="릴스에서 본 그 상품, 번호만 입력하면 바로 연결돼요.">
+<meta name="twitter:card" content="summary">
+<style>
+  :root{
+    --bg:#F6F6F8;
+    --card:#FFFFFF;
+    --ink:#17171B;
+    --sub:#6B6B76;
+    --muted:#9A9AA4;
+    --line:#ECECEF;
+    --accent:#FF5A36;
+    --accent-weak:#FFF0EB;
+    --radius:16px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",Roboto,"Helvetica Neue",Arial,sans-serif;
+    font-size:16px;
+    line-height:1.5;
+    min-height:100dvh;
+  }
+  .sr-only{
+    position:absolute;width:1px;height:1px;padding:0;margin:-1px;
+    overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;
+  }
+  .app{
+    max-width:520px;
+    margin:0 auto;
+    padding:calc(env(safe-area-inset-top) + 18px) 16px calc(env(safe-area-inset-bottom) + 24px);
+  }
+
+  /* ── 브랜드 ─────────────────────────── */
+  .brand{display:flex;align-items:center;gap:11px}
+  .logo{
+    flex:none;width:42px;height:42px;border-radius:13px;
+    background:var(--accent);color:#fff;
+    display:grid;place-items:center;
+    font-size:19px;font-weight:800;letter-spacing:-.02em;
+    box-shadow:0 4px 12px rgba(255,90,54,.24);
+  }
+  .brand-text{min-width:0}
+  h1{
+    margin:0;font-size:20px;line-height:1.25;font-weight:800;letter-spacing:-.02em;
+  }
+  .handle{
+    display:inline-block;margin-top:1px;
+    font-size:12.5px;font-weight:600;color:var(--accent);letter-spacing:0;
+  }
+  .tagline{
+    margin:14px 0 16px;
+    font-size:14px;line-height:1.55;color:var(--sub);
+    word-break:keep-all;
+  }
+
+  /* ── 검색 ───────────────────────────── */
+  .search-bar{
+    position:sticky;top:0;z-index:20;
+    margin:0 -16px;padding:10px 16px 8px;
+    background:rgba(246,246,248,.92);
+    -webkit-backdrop-filter:blur(14px);
+    backdrop-filter:blur(14px);
+    border-bottom:1px solid var(--line);
+  }
+  .search-field{position:relative}
+  .search-field svg{
+    position:absolute;left:15px;top:50%;transform:translateY(-50%);
+    width:19px;height:19px;color:var(--muted);pointer-events:none;
+  }
+  #q{
+    width:100%;height:50px;
+    padding:0 46px 0 44px;
+    border:1px solid #E3E3E9;border-radius:14px;
+    background:#fff;color:var(--ink);
+    font-family:inherit;font-size:16px;font-weight:500;
+    outline:none;appearance:none;
+    transition:border-color .15s,box-shadow .15s;
+  }
+  #q::placeholder{color:#B0B0BA;font-weight:400}
+  #q:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(255,90,54,.12)}
+  #q::-webkit-search-cancel-button,
+  #q::-webkit-search-decoration{-webkit-appearance:none;appearance:none;display:none}
+  .clear-btn{
+    position:absolute;right:9px;top:50%;transform:translateY(-50%);
+    width:30px;height:30px;padding:0;border:0;border-radius:50%;
+    background:#EFEFF3;color:#8A8A95;
+    display:grid;place-items:center;cursor:pointer;
+  }
+  .clear-btn[hidden]{display:none}
+  .clear-btn svg{position:static;transform:none;width:13px;height:13px;color:#8A8A95}
+
+  .quick{
+    display:flex;gap:8px;overflow-x:auto;
+    margin-top:9px;padding:1px 0 2px;
+    scrollbar-width:none;-ms-overflow-style:none;
+  }
+  .quick::-webkit-scrollbar{display:none}
+  .chip{
+    flex:none;
+    padding:7px 13px;border:1px solid var(--line);border-radius:999px;
+    background:#fff;color:#42424C;
+    font-family:inherit;font-size:13px;font-weight:700;
+    cursor:pointer;
+    transition:background .15s,color .15s,border-color .15s;
+  }
+  .chip:active{transform:scale(.97)}
+  .chip[aria-pressed="true"]{
+    background:var(--accent-weak);border-color:#FFD3C7;color:var(--accent);
+  }
+
+  /* ── 결과 ───────────────────────────── */
+  .result-meta{
+    display:flex;align-items:center;justify-content:space-between;
+    margin:16px 2px 10px;
+    font-size:12.5px;font-weight:600;color:var(--muted);
+  }
+  .result-meta b{color:var(--sub);font-weight:700}
+  .list{display:flex;flex-direction:column;gap:10px}
+
+  .card{
+    background:var(--card);
+    border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:0 1px 2px rgba(16,16,24,.03);
+    overflow:hidden;
+    animation:rise .22s ease both;
+  }
+  @keyframes rise{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){
+    .card{animation:none}
+    *{transition:none!important}
+  }
+  .card-btn{
+    display:flex;align-items:flex-start;gap:12px;width:100%;
+    padding:15px 14px;
+    background:transparent;border:0;
+    font-family:inherit;color:inherit;text-align:left;text-decoration:none;
+    cursor:pointer;
+  }
+  .card-btn:active{background:#FAFAFB}
+  .no{
+    flex:none;width:46px;height:46px;border-radius:13px;
+    background:var(--accent-weak);color:var(--accent);
+    display:grid;place-items:center;
+    font-size:15px;font-weight:800;letter-spacing:.02em;
+    font-variant-numeric:tabular-nums;
+  }
+  .card-body{flex:1;min-width:0;padding-top:1px}
+  .card-top{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+  .name{
+    margin:0;font-size:15.5px;font-weight:700;line-height:1.35;
+    letter-spacing:-.01em;word-break:keep-all;
+  }
+  .tag{
+    flex:none;
+    padding:2px 8px;border-radius:999px;
+    background:#F1F1F4;color:#71717C;
+    font-size:11px;font-weight:700;letter-spacing:0;
+  }
+  .desc{
+    margin:5px 0 0;
+    font-size:13px;line-height:1.55;color:var(--sub);
+    word-break:keep-all;
+  }
+  .chev{
+    flex:none;align-self:center;
+    color:#C6C6CF;font-size:20px;line-height:1;
+  }
+
+  /* ── 빈 결과 ─────────────────────────── */
+  .empty{
+    display:none;
+    margin-top:34px;text-align:center;
+  }
+  .empty.show{display:block}
+  .empty-ico{
+    width:56px;height:56px;margin:0 auto 14px;border-radius:18px;
+    background:#fff;border:1px solid var(--line);
+    display:grid;place-items:center;font-size:24px;
+  }
+  .empty h2{margin:0;font-size:15.5px;font-weight:700;word-break:keep-all}
+  .empty p{margin:7px 0 16px;font-size:13px;line-height:1.6;color:var(--sub);word-break:keep-all}
+  .reset-btn{
+    padding:10px 18px;border:0;border-radius:999px;
+    background:var(--accent);color:#fff;
+    font-family:inherit;font-size:13.5px;font-weight:700;cursor:pointer;
+  }
+
+  /* ── 푸터 ───────────────────────────── */
+  .foot{
+    margin-top:34px;padding-top:18px;
+    border-top:1px solid var(--line);
+    font-size:11px;line-height:1.65;color:var(--muted);
+    word-break:keep-all;
+  }
+  .foot p{margin:0 0 6px}
+  .foot .copy{margin-top:10px;font-size:11px;color:#B4B4BE}
+
+  /* ── 토스트 ─────────────────────────── */
+  #toast{
+    position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 22px);
+    transform:translate(-50%,14px);
+    z-index:60;
+    max-width:calc(100vw - 40px);
+    padding:12px 18px;border-radius:14px;
+    background:rgba(23,23,27,.94);color:#fff;
+    font-size:13.5px;font-weight:600;line-height:1.45;text-align:center;
+    word-break:keep-all;
+    box-shadow:0 8px 24px rgba(0,0,0,.2);
+    opacity:0;pointer-events:none;
+    transition:opacity .18s ease,transform .18s ease;
+  }
+  #toast.show{opacity:1;transform:translate(-50%,0)}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header>
+    <div class="brand">
+      <div class="logo" aria-hidden="true">픽</div>
+      <div class="brand-text">
+        <h1>오늘의 픽템</h1>
+        <span class="handle">@oneul_picktem</span>
+      </div>
+    </div>
+    <p class="tagline">릴스에서 본 그 상품, 번호만 입력하면 바로 연결돼요</p>
+  </header>
+
+  <div class="search-bar">
+    <div class="search-field">
+      <label class="sr-only" for="q">상품 번호 또는 상품명 검색</label>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+        <circle cx="11" cy="11" r="7"></circle>
+        <line x1="16.5" y1="16.5" x2="21" y2="21"></line>
+      </svg>
+      <input id="q" type="search" inputmode="search" enterkeyhint="search"
+             autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+             placeholder="번호 입력 (예: 1, 01)">
+      <button class="clear-btn" id="clear" type="button" aria-label="검색어 지우기" hidden>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true">
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+    <div class="quick" id="quick" aria-label="상품 번호 바로가기"></div>
+  </div>
+
+  <div class="result-meta">
+    <span id="count" aria-live="polite">전체 0개</span>
+    <span>릴스 번호 = 상품 번호</span>
+  </div>
+
+  <main class="list" id="list"></main>
+
+  <div class="empty" id="empty">
+    <div class="empty-ico" aria-hidden="true">🔎</div>
+    <h2 id="empty-title">맞는 상품이 없어요</h2>
+    <p>릴스에 나온 번호를 다시 확인해 주세요.<br>상품명 일부로도 찾을 수 있어요.</p>
+    <button class="reset-btn" id="reset" type="button">전체 상품 보기</button>
+  </div>
+
+  <footer class="foot">
+    <p>이 페이지의 일부 링크는 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.</p>
+    <p class="copy">© 오늘의 픽템 · @oneul_picktem</p>
+  </footer>
+</div>
+
+<div id="toast" role="status" aria-live="polite"></div>
+<noscript>
+  <p style="padding:16px;text-align:center;font-size:14px">상품 검색을 사용하려면 브라우저에서 자바스크립트를 켜 주세요.</p>
+</noscript>
+
+<script src="data.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  var PRODUCTS = (Array.isArray(window.PICKTEM_PRODUCTS) ? window.PICKTEM_PRODUCTS.slice() : [])
+    .filter(function (p) { return p && typeof p.no !== "undefined"; })
+    .sort(function (a, b) { return Number(a.no) - Number(b.no); });
+
+  var $q = document.getElementById("q");
+  var $clear = document.getElementById("clear");
+  var $list = document.getElementById("list");
+  var $count = document.getElementById("count");
+  var $empty = document.getElementById("empty");
+  var $emptyTitle = document.getElementById("empty-title");
+  var $quick = document.getElementById("quick");
+  var $toast = document.getElementById("toast");
+  var toastTimer = null;
+
+  function pad(n) {
+    var s = String(n);
+    return s.length < 2 ? "0" + s : s;
+  }
+  function digitsOnly(s) {
+    return String(s).replace(/\s+/g, "");
+  }
+  function stripZeros(s) {
+    return s.replace(/^0+(?=\d)/, "");
+  }
+  function textOf(p) {
+    return [p.name || "", p.desc || "", p.tag || "", (p.keywords || []).join(" "), pad(p.no), String(p.no)]
+      .join(" ").toLowerCase();
+  }
+
+  function search(query) {
+    var t = String(query || "").trim().toLowerCase();
+    if (!t) return PRODUCTS;
+
+    var d = digitsOnly(t);
+    if (/^\d+$/.test(d)) {
+      var qd = stripZeros(d);
+      var exact = PRODUCTS.filter(function (p) { return stripZeros(String(p.no)) === qd; });
+      if (exact.length) return exact;
+      var prefix = PRODUCTS.filter(function (p) {
+        var s = String(p.no);
+        return s.indexOf(qd) === 0 || stripZeros(s).indexOf(qd) === 0;
+      });
+      if (prefix.length) return prefix;
+    }
+
+    var words = t.split(/\s+/).filter(Boolean);
+    return PRODUCTS.filter(function (p) {
+      var hay = textOf(p);
+      return words.every(function (w) { return hay.indexOf(w) !== -1; });
+    });
+  }
+
+  function showToast(message) {
+    $toast.textContent = message;
+    $toast.classList.add("show");
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { $toast.classList.remove("show"); }, 2400);
+  }
+
+  function makeCard(item) {
+    var wrap = document.createElement("article");
+    wrap.className = "card";
+
+    var el = document.createElement(item.url ? "a" : "button");
+    el.className = "card-btn";
+    if (item.url) {
+      el.href = item.url;
+      el.target = "_blank";
+      el.rel = "noopener noreferrer sponsored";
+      el.setAttribute("aria-label", pad(item.no) + "번 " + (item.name || "상품") + " 열기");
+    } else {
+      el.type = "button";
+      el.setAttribute("aria-label", pad(item.no) + "번 " + (item.name || "상품") + " (준비중)");
+    }
+
+    var no = document.createElement("span");
+    no.className = "no";
+    no.textContent = pad(item.no);
+
+    var body = document.createElement("div");
+    body.className = "card-body";
+
+    var top = document.createElement("div");
+    top.className = "card-top";
+
+    var name = document.createElement("h2");
+    name.className = "name";
+    name.textContent = item.name || "상품 " + pad(item.no);
+    top.appendChild(name);
+
+    if (item.tag) {
+      var tag = document.createElement("span");
+      tag.className = "tag";
+      tag.textContent = item.tag;
+      top.appendChild(tag);
+    }
+    body.appendChild(top);
+
+    if (item.desc) {
+      var desc = document.createElement("p");
+      desc.className = "desc";
+      desc.textContent = item.desc;
+      body.appendChild(desc);
+    }
+
+    var chev = document.createElement("span");
+    chev.className = "chev";
+    chev.setAttribute("aria-hidden", "true");
+    chev.textContent = item.url ? "›" : "·";
+
+    el.appendChild(no);
+    el.appendChild(body);
+    el.appendChild(chev);
+
+    if (!item.url) {
+      el.addEventListener("click", function () {
+        showToast(pad(item.no) + "번 상품은 아직 링크가 연결되지 않았어요. 곧 업데이트할게요!");
+      });
+    }
+
+    wrap.appendChild(el);
+    return wrap;
+  }
+
+  function render(query) {
+    var results = search(query);
+    var q = String(query || "").trim();
+
+    $list.textContent = "";
+    results.forEach(function (item) { $list.appendChild(makeCard(item)); });
+
+    if (!PRODUCTS.length) {
+      $count.textContent = "등록된 상품이 없어요";
+    } else if (q) {
+      $count.innerHTML = "‘<b></b>’ 검색 결과 <b></b>개";
+      var bs = $count.querySelectorAll("b");
+      bs[0].textContent = q;
+      bs[1].textContent = results.length;
+    } else {
+      $count.innerHTML = "전체 <b></b>개";
+      $count.querySelector("b").textContent = PRODUCTS.length;
+    }
+
+    $empty.classList.toggle("show", results.length === 0);
+    if (results.length === 0 && q) {
+      $emptyTitle.textContent = "‘" + q + "’에 맞는 상품이 없어요";
+    } else {
+      $emptyTitle.textContent = "맞는 상품이 없어요";
+    }
+
+    $clear.hidden = q.length === 0;
+    markChips(q);
+
+    window.__picktemState = { query: q, count: results.length, numbers: results.map(function (p) { return pad(p.no); }) };
+  }
+
+  function markChips(q) {
+    var d = /^\d+$/.test(digitsOnly(q)) ? stripZeros(digitsOnly(q)) : null;
+    Array.prototype.forEach.call($quick.children, function (chip) {
+      var active = d !== null && stripZeros(chip.dataset.no) === d;
+      chip.setAttribute("aria-pressed", active ? "true" : "false");
+    });
+  }
+
+  function buildQuick() {
+    $quick.textContent = "";
+    PRODUCTS.forEach(function (p) {
+      var chip = document.createElement("button");
+      chip.type = "button";
+      chip.className = "chip";
+      chip.dataset.no = String(p.no);
+      chip.textContent = pad(p.no);
+      chip.setAttribute("aria-pressed", "false");
+      chip.setAttribute("aria-label", pad(p.no) + "번 상품 보기");
+      chip.addEventListener("click", function () {
+        var next = stripZeros(String(p.no));
+        if (stripZeros(digitsOnly($q.value)) === next) {
+          $q.value = "";
+        } else {
+          $q.value = pad(p.no);
+        }
+        render($q.value);
+        $q.focus({ preventScroll: true });
+      });
+      $quick.appendChild(chip);
+    });
+    if (!PRODUCTS.length) $quick.hidden = true;
+  }
+
+  $q.addEventListener("input", function () { render($q.value); });
+  $q.addEventListener("keydown", function (e) {
+    if (e.key === "Enter") { e.preventDefault(); $q.blur(); }
+    if (e.key === "Escape" && $q.value) { $q.value = ""; render(""); }
+  });
+  $clear.addEventListener("click", function () {
+    $q.value = "";
+    render("");
+    $q.focus({ preventScroll: true });
+  });
+  document.getElementById("reset").addEventListener("click", function () {
+    $q.value = "";
+    render("");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
+  buildQuick();
+  render("");
+})();
+</script>
+</body>
+</html>
